@@ -1,0 +1,31 @@
+{
+  "name": "musicapi",
+  "version": "1.0.0",
+  "description": "This Is a new music api to start with uploading music and listeaning to it",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kartiks26/musicApi.git"
+  },
+  "keywords": [
+    "music",
+    "api"
+  ],
+  "author": "Kartik Shikhare",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kartiks26/musicApi/issues"
+  },
+  "homepage": "https://github.com/kartiks26/musicApi#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.12",
+    "multer": "^1.4.3",
+    "nodemon": "^2.0.14"
+  }
+}

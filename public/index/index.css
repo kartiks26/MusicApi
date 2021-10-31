@@ -1,0 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Atomic+Age&display=swap");
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+.flexbox {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+	height: 100vh;
+	color: #fff;
+	background-color: #000;
+}
+.flexbox > h1 {
+	font-family: "Atomic Age", cursive;
+	text-transform: uppercase;
+	padding: 25px;
+	letter-spacing: 20px;
+	font-size: 4rem;
+}
+.flexbox > p {
+	letter-spacing: 2px;
+	font-size: 1rem;
+}
+li,
+a,
+ul {
+	text-decoration: none;
+	list-style: none;
+	color: rgb(255, 255, 255);
+}
