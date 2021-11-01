@@ -1,9 +1,9 @@
-const { application } = require("express");
 const express = require("express");
 const multer = require("multer");
 let path = require("path");
 const Songs = require("../models/songs");
 const router = express.Router();
+const fs = require("fs");
 
 // Basic Page For Uploading songs
 router.get("/", (req, res) => {
@@ -19,22 +19,25 @@ const fileStorageEngine = multer.diskStorage({
 			cb(null, "./songCover");
 		}
 	},
+
 	filename: (req, file, cb) => {
 		cb(null, Date.now() + file.originalname);
 	},
 });
-const upload = multer({ storage: fileStorageEngine });
+const upload = multer({
+	storage: fileStorageEngine,
+	limits: {
+		fileSize: 1024 * 1024 * 8,
+	},
+});
 
-router.post("/addSong", upload.array("files", 2), async (req, res) => {
+router.post("/addSong", upload.array("files"), async (req, res) => {
 	let songUrl = "";
 	let CoverUrl = "";
-	req.files.forEach((element) => {
-		if (element.mimetype === "audio/mpeg") {
-			songUrl = process.env.url + "upload/getSongs/" + element.filename;
-		} else {
-			CoverUrl = process.env.url + "upload/getCover/" + element.filename;
-		}
-	});
+
+	songUrl = process.env.url + "upload/getSongs/" + req.files[1].filename;
+
+	CoverUrl = process.env.url + "upload/getCover/" + req.files[0].filename;
 
 	let song = new Songs({
 		title: req.body.title,
@@ -42,18 +45,108 @@ router.post("/addSong", upload.array("files", 2), async (req, res) => {
 		SongUrl: songUrl,
 		cover: CoverUrl,
 	});
-	song.save().then(() => {
-		res.json({
-			message: "Song Uploaded Successfully",
-			song,
+	song
+		.save()
+		.then(() => {
+			res.json({
+				message: "Song Uploaded Successfully",
+				song,
+			});
+		})
+		.catch((err) => {
+			res.json({
+				message: "Error Occured",
+				err,
+			});
 		});
-	});
-});
-router.get("/getSongs/:filename", (req, res) => {
-	res.sendFile(path.join(__dirname, "../songs/" + req.params.filename));
 });
 
-router.get("/getCover/:filename", (req, res) => {
-	res.sendFile(path.join(__dirname, "../songCover/" + req.params.filename));
+// To specify Urls into database get that songs and images Routes
+//_______________________________________________________________________________________
+
+// Songs Get Call
+router.get("/getSongs/:filename", async (req, res) => {
+	// try {
+	// 	const url = path.join(__dirname, "../songs/");
+	// 	res.sendFile(req.params.filename, { root: url }, function (err) {
+	// 		if (err) {
+	// 			res.status(404).json({
+	// 				success: false,
+	// 				message: "Song not Found",
+	// 			});
+	// 		} else {
+	// 			console.log("Song Found");
+	// 		}
+	// 	});
+	// } catch (error) {
+	// 	res.status(500).json({
+	// 		success: false,
+	// 		message: "Server Error",
+	// 	});
+	// }
+	res.sendFile(path.join(__dirname, "../songs/", req.params.filename));
 });
+
+//Images Get Call
+router.get("/getCover/:filename", (req, res) => {
+	try {
+		res.sendFile(path.join(__dirname, "../songCover/" + req.params.filename)),
+			(err) => {
+				if (err) {
+					res.status(404).json({
+						success: false,
+						message: "Image Not Found",
+					});
+				}
+			};
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Server error",
+		});
+		console.log(error);
+	}
+});
+
+//_______________________________________________________________________________________
+
+router.get("/getAllSongs", async (req, res) => {
+	try {
+		let songs = await Songs.find({});
+		res.json({
+			success: true,
+			songs,
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Server Error",
+		});
+		console.log(error);
+	}
+});
+
+router.delete("/deleteSong/:id", async (req, res) => {
+	try {
+		let song = await Songs.findById(req.params.id);
+		if (!song) {
+			return res.status(404).json({
+				success: false,
+				message: "Song Not Found",
+			});
+		}
+		song.remove();
+		res.json({
+			success: true,
+			message: "Song Deleted Successfully",
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Server Error",
+		});
+		console.log(error);
+	}
+});
+
 module.exports = router;

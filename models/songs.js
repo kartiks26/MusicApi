@@ -10,14 +10,14 @@ const song = new Schema({
 
 	cover: {
 		type: String,
-		required: true,
+		// required: true,
 	},
 	artist: {
 		type: String,
 	},
 	SongUrl: {
 		type: String,
-		required: true,
+		// required: true,
 	},
 });
 
