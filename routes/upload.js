@@ -103,6 +103,7 @@ router.post("/addSongWithFirebase", async (req, res) => {
 		SongUrl: req.body.songUrl,
 		cover: req.body.coverUrl,
 		userId: req.body.userId,
+		// Added By: kartik
 	});
 	songData
 		.save()
