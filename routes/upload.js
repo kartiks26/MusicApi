@@ -4,6 +4,9 @@ let path = require("path");
 const Songs = require("../models/songs");
 const router = express.Router();
 const fs = require("fs");
+const { uploadFile } = require("../firebaseDb");
+const { deprecate } = require("util");
+const { json } = require("express");
 
 // Basic Page For Uploading songs
 router.get("/", (req, res) => {
@@ -57,6 +60,63 @@ router.post("/addSong", upload.array("files"), async (req, res) => {
 			res.json({
 				message: "Error Occured",
 				err,
+			});
+		});
+});
+
+// @deprecated
+router.post("/addSong", upload.array("files"), async (req, res) => {
+	let songUrl = "";
+	let CoverUrl = "";
+
+	songUrl = process.env.url + "upload/getSongs/" + req.files[1].filename;
+
+	CoverUrl = process.env.url + "upload/getCover/" + req.files[0].filename;
+
+	let song = new Songs({
+		title: req.body.title,
+		artist: req.body.artist,
+		SongUrl: songUrl,
+		cover: CoverUrl,
+	});
+	song
+		.save()
+		.then(() => {
+			res.json({
+				message:
+					"Song Uploaded Successfully but try to post data with firebase method",
+				song,
+			});
+		})
+		.catch((err) => {
+			res.json({
+				message: "Error Occured",
+				err,
+			});
+		});
+});
+
+router.post("/addSongWithFirebase", async (req, res) => {
+	const songData = new Songs({
+		title: req.body.title,
+		artist: req.body.artist,
+		SongUrl: req.body.songUrl,
+		cover: req.body.coverUrl,
+		userId: req.body.userId,
+	});
+	songData
+		.save()
+		.then(() => {
+			res.json({
+				message: "Song Uploaded Successfully",
+				songData,
+			});
+		})
+		.catch((err) => {
+			res.json({
+				message: "Error Occurred",
+				err,
+				songData,
 			});
 		});
 });

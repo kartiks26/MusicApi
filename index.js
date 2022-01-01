@@ -4,7 +4,7 @@ const express = require("express");
 const upload = require("./routes/upload");
 const cors = require("cors");
 const dotenv = require("dotenv");
-
+var fileupload = require("express-fileupload");
 // env variables from .env file
 dotenv.config();
 
@@ -24,7 +24,9 @@ connection.once("open", () => {
 //--------------------------------------------
 // Initialize the app
 const app = express();
+app.use(fileupload());
 // Port
+
 const port = process.env.PORT || 5000;
 // Middleware to get data from body
 app.use(express.json());
