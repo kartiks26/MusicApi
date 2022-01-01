@@ -19,6 +19,9 @@ const song = new Schema({
 		type: String,
 		// required: true,
 	},
+	userId: {
+		type: String,
+	},
 });
 
 const songs = mongoose.model("Songs", song);

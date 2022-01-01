@@ -210,4 +210,22 @@ router.delete("/deleteSong/:id", async (req, res) => {
 	}
 });
 
+//  get songs uploaded by user
+
+router.get("/getSongsByUser/:userId", async (req, res) => {
+	try {
+		let songs = await Songs.find({ userId: req.params.userId });
+		res.json({
+			success: true,
+			songs,
+		});
+	} catch (error) {
+		res.status(500).json({
+			success: false,
+			message: "Server Error",
+		});
+		console.log(error);
+	}
+});
+
 module.exports = router;
